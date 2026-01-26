@@ -24,7 +24,7 @@ func Build(am *assetmin.AssetMin) error {
 	am.InjectBodyContent(nav)
 
 	// Default main container
-	am.InjectBodyContent(`<div id="root"></div>`)
+	am.InjectBodyContent(`<div id="app"></div>`)
 
 	// Process modules
 	for _, m := range handler.registeredModules {

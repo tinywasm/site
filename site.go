@@ -20,8 +20,3 @@ var (
 	handler = &siteHandler{}
 	cp      = crudp.New()
 )
-
-// GetCrudP returns the global crudp instance
-func GetCrudP() *crudp.CrudP {
-	return cp
-}

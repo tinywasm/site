@@ -16,15 +16,12 @@ func main() {
 	}
 
 	// 2. Mount Active Component
-	if err := site.Mount("root"); err != nil {
+	if err := site.Mount(); err != nil {
 		fmt.Println("Error mounting site:", err)
 		return
 	}
 
 	fmt.Println("Site mounted successfully ok")
-
-	// 3. Connect responses to handlers (via crudp)
-	site.GetCrudP().InitClient()
 
 	select {}
 }
