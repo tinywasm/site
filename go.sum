@@ -4,6 +4,8 @@ github.com/tdewolff/parse/v2 v2.8.5 h1:ZmBiA/8Do5Rpk7bDye0jbbDUpXXbCdc3iah4VeUvw
 github.com/tdewolff/parse/v2 v2.8.5/go.mod h1:Hwlni2tiVNKyzR1o6nUs4FOF07URA+JLBLd6dlIXYqo=
 github.com/tdewolff/test v1.0.11 h1:FdLbwQVHxqG16SlkGveC0JVyrJN62COWTRyUFzfbtBE=
 github.com/tdewolff/test v1.0.11/go.mod h1:XPuWBzvdUzhCuxWO1ojpXsyzsA5bFoS3tO/Q3kFuTG8=
+github.com/tinywasm/assetmin v0.0.76 h1:d66bDjwW0iWhUtJbhUi/Sw24wPSlBu5kL54M51iHaYs=
+github.com/tinywasm/assetmin v0.0.76/go.mod h1:SWZNMq/LNLY3u2+s8dhAyiGjZ8+OxtgzRmSMpajnHOw=
 github.com/tinywasm/binary v0.5.3 h1:deNGNbZHNxhfgjy6pwbg+z2B+LVnlE1l7dugRmmdJ94=
 github.com/tinywasm/binary v0.5.3/go.mod h1:3BHp47sWLiSNfbAtdckytfQeKXztUq49uRZGJBVr6Yg=
 github.com/tinywasm/context v0.0.11 h1:k+IeEPihgORcwp+2n2qygBzfh61fMouFzOEhBwvVIrI=

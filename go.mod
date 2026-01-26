@@ -3,7 +3,7 @@ module github.com/tinywasm/site
 go 1.25.2
 
 require (
-	github.com/tinywasm/assetmin v0.0.75
+	github.com/tinywasm/assetmin v0.0.76
 	github.com/tinywasm/dom v0.0.9
 )
 
@@ -19,5 +19,3 @@ require (
 	github.com/tinywasm/crudp v0.2.6
 	github.com/tinywasm/fmt v0.16.1
 )
-
-replace github.com/tinywasm/assetmin => ../assetmin
