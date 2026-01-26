@@ -11,7 +11,7 @@ import (
 
 // Build registers all assets with assetmin
 func Build(am *assetmin.AssetMin) error {
-	if len(registeredModules) == 0 {
+	if len(handler.registeredModules) == 0 {
 		return nil
 	}
 
@@ -27,7 +27,7 @@ func Build(am *assetmin.AssetMin) error {
 	am.InjectBodyContent(`<div id="root"></div>`)
 
 	// Process modules
-	for _, m := range registeredModules {
+	for _, m := range handler.registeredModules {
 		h := m.handler
 
 		// CSS

@@ -28,7 +28,7 @@ func (h *mockHandler) AllowedRoles(action byte) []byte {
 
 func TestSite_RegistrationFlow(t *testing.T) {
 	// Reset global state for test
-	registeredModules = nil
+	handler.registeredModules = nil
 
 	h1 := &mockHandler{
 		name: "nav-module",
@@ -78,7 +78,7 @@ func TestSite_RegistrationFlow(t *testing.T) {
 }
 
 func TestSite_Validation(t *testing.T) {
-	registeredModules = nil
+	handler.registeredModules = nil
 
 	// Register only private module
 	h := &mockHandler{name: "private", role: 'u'}

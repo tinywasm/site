@@ -4,11 +4,7 @@ import (
 	"github.com/tinywasm/fmt"
 )
 
-// module wraps a handler for site registration
-type module struct {
-	handler any
-	name    string
-}
+// module definition moved to site.go
 
 // RegisterHandlers registers all handlers with site and crudp
 func RegisterHandlers(handlers ...any) error {

@@ -11,7 +11,7 @@ import (
 // RenderNavigation generates nav HTML from registered public modules
 func RenderNavigation() string {
 	var links []string
-	for _, m := range registeredModules {
+	for _, m := range handler.registeredModules {
 		if !isPublicReadable(m.handler) {
 			continue
 		}
