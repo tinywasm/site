@@ -21,7 +21,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Site mounted successfully")
+	fmt.Println("Site mounted successfully ok")
 
 	// 3. Connect responses to handlers (via crudp)
 	site.GetCrudP().InitClient()

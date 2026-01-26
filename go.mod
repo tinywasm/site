@@ -3,7 +3,7 @@ module github.com/tinywasm/site
 go 1.25.2
 
 require (
-	github.com/tinywasm/assetmin v0.0.76
+	github.com/tinywasm/assetmin v0.0.77
 	github.com/tinywasm/dom v0.0.9
 )
 

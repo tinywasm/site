@@ -1,7 +1,6 @@
 package site
 
 import (
-	"github.com/tinywasm/crudp"
 	"github.com/tinywasm/fmt"
 )
 
@@ -11,17 +10,9 @@ type module struct {
 	name    string
 }
 
-var (
-	registeredModules []*module
-	cp                *crudp.CrudP
-)
-
 // RegisterHandlers registers all handlers with site and crudp
 func RegisterHandlers(handlers ...any) error {
-	if cp == nil {
-		cp = crudp.New()
-		cp.SetDevMode(true) // Default dev mode
-	}
+	cp.SetDevMode(true) // Default to dev mode, can be changed later
 
 	if len(handlers) == 0 {
 		return nil
@@ -32,7 +23,7 @@ func RegisterHandlers(handlers ...any) error {
 		if named, ok := h.(interface{ HandlerName() string }); ok {
 			m.name = named.HandlerName()
 		}
-		registeredModules = append(registeredModules, m)
+		handler.registeredModules = append(handler.registeredModules, m)
 	}
 
 	if err := cp.RegisterHandlers(handlers...); err != nil {
@@ -42,12 +33,7 @@ func RegisterHandlers(handlers ...any) error {
 	return nil
 }
 
-// GetCrudP returns the internal crudp instance
-func GetCrudP() *crudp.CrudP {
-	return cp
-}
-
 // GetModules returns all registered modules
 func GetModules() []*module {
-	return registeredModules
+	return handler.registeredModules
 }
