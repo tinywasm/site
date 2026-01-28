@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/tinywasm/assetmin"
+	"github.com/tinywasm/client"
 	"github.com/tinywasm/fmt"
 )
 
@@ -24,9 +25,17 @@ func Mount(mux *http.ServeMux) error {
 	// We can check if we are in dev mode via crudp or environment if needed.
 	// For now, let's assume we want to be safe and efficient.
 
+	// Create Javascript handler
+	jsHandler := &client.Javascript{
+		WasmFilename: "client.wasm",
+	}
+
 	// Create AssetMin instance (private/internal)
 	am := assetmin.NewAssetMin(&assetmin.Config{
 		OutputDir: "./public",
+
+		GetSSRClientInitJS: jsHandler.GetSSRClientInitJS,
+
 		// We can infer DevMode from crudp or assume production by default for safety in non-dev envs?
 		// But usually `site` usage suggests a simple server.
 		// Let's use `false` (Production/Efficient) by default for new assetmin,
