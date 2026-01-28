@@ -8,7 +8,7 @@ import (
 
 // RegisterHandlers registers all handlers with site and crudp
 func RegisterHandlers(handlers ...any) error {
-	cp.SetDevMode(true) // Default to dev mode, can be changed later
+	handler.cp.SetDevMode(handler.DevMode)
 
 	if len(handlers) == 0 {
 		return nil
@@ -22,7 +22,7 @@ func RegisterHandlers(handlers ...any) error {
 		handler.registeredModules = append(handler.registeredModules, m)
 	}
 
-	if err := cp.RegisterHandlers(handlers...); err != nil {
+	if err := handler.cp.RegisterHandlers(handlers...); err != nil {
 		fmt.Println("site: crudp registration error:", err)
 		return err
 	}

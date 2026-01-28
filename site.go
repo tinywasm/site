@@ -13,10 +13,13 @@ type module struct {
 // siteHandler manages the internal state of the site
 type siteHandler struct {
 	registeredModules []*module
+	DevMode           bool
+	cp                *crudp.CrudP
 }
 
 var (
 	// Singleton instances
-	handler = &siteHandler{}
-	cp      = crudp.New()
+	handler = &siteHandler{
+		cp: crudp.New(),
+	}
 )

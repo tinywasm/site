@@ -3,13 +3,11 @@
 package site
 
 import (
-	"strings"
-
 	"github.com/tinywasm/fmt"
 )
 
-// RenderNavigation generates nav HTML from registered public modules
-func RenderNavigation() string {
+// renderNavigation generates nav HTML from registered public modules
+func renderNavigation() string {
 	var links []string
 	for _, m := range handler.registeredModules {
 		if !isPublicReadable(m.handler) {
@@ -25,7 +23,7 @@ func RenderNavigation() string {
 	if len(links) == 0 {
 		return ""
 	}
-	return fmt.Sprintf(`<nav class="module-nav">%s</nav>`, strings.Join(links, ""))
+	return fmt.Sprintf(`<nav class="module-nav">%s</nav>`, fmt.Convert(links).Join("").String())
 }
 
 func isPublicReadable(handler any) bool {

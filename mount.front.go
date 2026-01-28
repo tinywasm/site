@@ -35,7 +35,7 @@ func Mount() error {
 
 	// 2. Initialize Client (CrudP)
 	// This connects the responses to the handlers
-	cp.InitClient()
+	handler.cp.InitClient()
 
 	return nil
 }

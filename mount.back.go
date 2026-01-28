@@ -4,17 +4,20 @@ package site
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/tinywasm/assetmin"
 	"github.com/tinywasm/client"
 	"github.com/tinywasm/fmt"
 )
 
-// configSite defines the configuration for the site mount
-type configSite struct {
-	PublicDir   string
-	DevMode     bool
-	AssetsCache bool // Forces assetmin to cache or not. If nil/false/true depends on logic.
+func init() {
+	for _, arg := range os.Args {
+		if arg == "-dev" {
+			handler.DevMode = true
+			break
+		}
+	}
 }
 
 // Mount configures the server handled by site.
@@ -42,7 +45,7 @@ func Mount(mux *http.ServeMux) error {
 		// Let's use `false` (Production/Efficient) by default for new assetmin,
 		// or maybe expose a `site.SetDevMode` that propagates.
 		// Given crudp has SetDevMode, we should probably check that.
-		DevMode: cp.IsDevMode(), // Make sure crudp exposes IsDevMode or we just track it.
+		DevMode: handler.DevMode,
 	})
 
 	// Register AssetMin Routes
@@ -55,7 +58,7 @@ func Mount(mux *http.ServeMux) error {
 	}
 
 	// Register CrudP Routes
-	cp.RegisterRoutes(mux)
+	handler.cp.RegisterRoutes(mux)
 
 	return nil
 }

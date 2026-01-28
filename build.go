@@ -15,7 +15,7 @@ func build(am *assetmin.AssetMin) error {
 		return nil
 	}
 
-	nav := RenderNavigation()
+	nav := renderNavigation()
 	if nav == "" {
 		return errors.New("site: modules registered but no public modules for navigation")
 	}
