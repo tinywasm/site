@@ -27,6 +27,7 @@ func Mount(mux *http.ServeMux) error {
 
 	// Create Javascript handler
 	jsHandler := &client.Javascript{
+		UseTinyGo:    client.ParseUseTinyGoFlag(),
 		WasmFilename: "client.wasm",
 	}
 
