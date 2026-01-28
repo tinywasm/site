@@ -27,7 +27,7 @@
     *   *Note*: `AddPages` is preferred over `AddModules` as it clearly indicates we are adding navigable pages to the site.
 *   Internally, `Site` iterates over these pages to:
     1.  Register routes (e.g., `/users`, `/contact`).
-    2.  Build the navigation menu using `PageName()` and `IconSvg()`.
+    2.  build the navigation menu using `PageName()` and `IconSvg()`.
     3.  Map routes to their respective components for rendering (SSR and Client-side).
 
 ### 4. Integration with TinyDOM
@@ -52,7 +52,7 @@ func Init() []any {
 
 func Init(logger func(msg ...any)) *site.Site {
 
-    config := site.Config{
+    config := site.configSite{
         Logger: logger,
         ColorScheme: site.ColorScheme{
             // Brand Colors

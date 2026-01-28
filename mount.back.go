@@ -10,8 +10,8 @@ import (
 	"github.com/tinywasm/fmt"
 )
 
-// Config defines the configuration for the site mount
-type Config struct {
+// configSite defines the configuration for the site mount
+type configSite struct {
 	PublicDir   string
 	DevMode     bool
 	AssetsCache bool // Forces assetmin to cache or not. If nil/false/true depends on logic.
@@ -21,7 +21,7 @@ type Config struct {
 // It initializes assetmin and registers all routes.
 func Mount(mux *http.ServeMux) error {
 	// Default Configuration
-	// We want to be "Zero Config" for the user.
+	// We want to be "Zero configSite" for the user.
 	// We can check if we are in dev mode via crudp or environment if needed.
 	// For now, let's assume we want to be safe and efficient.
 
@@ -48,8 +48,8 @@ func Mount(mux *http.ServeMux) error {
 	// Register AssetMin Routes
 	am.RegisterRoutes(mux)
 
-	// Build Assets (generate/minify)
-	if err := Build(am); err != nil {
+	// build Assets (generate/minify)
+	if err := build(am); err != nil {
 		fmt.Println("site: build error:", err)
 		return err
 	}

@@ -40,14 +40,14 @@ func TestIntegration_Mount(t *testing.T) {
 
 	// Check for a known asset (e.g. style.css)
 	// Since we mocked registeredModules, assetmin might not have generated style.css if it wasn't triggered correctly,
-	// but Build() loops through registered modules.
+	// but build() loops through registered modules.
 	// We registered a module with RenderCSS, so assetmin should have "integration-module.css" or similar if we use module mode,
 	// OR it appends to main style if configured that way.
-	// In the current Build implementation: am.AddCSS(m.name, content)
+	// In the current build implementation: am.AddCSS(m.name, content)
 
 	// AssetMin usually combines them or serves them.
 	// Let's check if the root endpoint works (index.html is always generated)
-	// Note: site.Mount -> Build -> AssetMin setup
+	// Note: site.Mount -> build -> AssetMin setup
 
 	// Create a request
 	req, _ := http.NewRequest("GET", "/", nil)

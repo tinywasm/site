@@ -49,8 +49,8 @@ func TestSite_RegistrationFlow(t *testing.T) {
 
 	RegisterHandlers(h1, h2, h3)
 
-	if len(GetModules()) != 3 {
-		t.Errorf("expected 3 modules, got %d", len(GetModules()))
+	if len(getModules()) != 3 {
+		t.Errorf("expected 3 modules, got %d", len(getModules()))
 	}
 
 	// Test renderNavigation
@@ -62,14 +62,14 @@ func TestSite_RegistrationFlow(t *testing.T) {
 		t.Error("navigation should NOT contain private-module")
 	}
 
-	// Test Build
+	// Test build
 	am := assetmin.NewAssetMin(&assetmin.Config{
 		OutputDir: "./test_public",
 	})
 
-	err := Build(am)
+	err := build(am)
 	if err != nil {
-		t.Fatalf("Build failed: %v", err)
+		t.Fatalf("build failed: %v", err)
 	}
 
 	// Internal state check for assetmin (needs bypass or checking exported state)
@@ -85,9 +85,9 @@ func TestSite_Validation(t *testing.T) {
 	RegisterHandlers(h)
 
 	am := assetmin.NewAssetMin(&assetmin.Config{})
-	err := Build(am)
+	err := build(am)
 	if err == nil {
-		t.Error("Build should fail if no public modules for navigation")
+		t.Error("build should fail if no public modules for navigation")
 	}
 	if !strings.Contains(err.Error(), "no public modules for navigation") {
 		t.Errorf("unexpected error: %v", err)

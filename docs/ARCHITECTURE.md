@@ -32,14 +32,14 @@ graph TD
 Registration is orchestrated by `tinywasm/site` to ensure consistent behavior across environments:
 
 - `register.go`: Defines `AddModules()` to register handlers.
-- `register.back.go` (`!wasm`): Implements `Build(am *assetmin.AssetMin)` to extract assets and inject HTML/Navigation into the body.
+- `register.back.go` (`!wasm`): Implements `build(am *assetmin.AssetMin)` to extract assets and inject HTML/Navigation into the body.
 - `register.front.go` (`wasm`): Handles client-side mounting and SPA navigation.
 
 ## Execution Flow
 
 1. **Server (!wasm)**:
     - `site.AddModules()` registers component handlers.
-    - `site.Build(am)` orchestrates the SSR flow:
+    - `site.build(am)` orchestrates the SSR flow:
         - Injects auto-generated navigation based on `HandlerName()`.
         - Extracts CSS/Icons via `assetmin.AddCSS()` and `assetmin.AddIcon()`.
         - Injects module HTML (SSR) for public components.

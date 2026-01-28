@@ -9,8 +9,8 @@ import (
 	"github.com/tinywasm/assetmin"
 )
 
-// Build registers all assets with assetmin
-func Build(am *assetmin.AssetMin) error {
+// build registers all assets with assetmin
+func build(am *assetmin.AssetMin) error {
 	if len(handler.registeredModules) == 0 {
 		return nil
 	}

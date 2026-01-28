@@ -29,7 +29,7 @@ func RegisterHandlers(handlers ...any) error {
 	return nil
 }
 
-// GetModules returns all registered modules
-func GetModules() []*module {
+// getModules returns all registered modules
+func getModules() []*module {
 	return handler.registeredModules
 }
