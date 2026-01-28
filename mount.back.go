@@ -34,7 +34,7 @@ func Mount(mux *http.ServeMux) error {
 	am := assetmin.NewAssetMin(&assetmin.Config{
 		OutputDir: "./public",
 
-		GetSSRClientInitJS: jsHandler.GetSSRClientInitJS,
+		GetSSRClientInitJS: func() (string, error) { return jsHandler.GetSSRClientInitJS() },
 
 		// We can infer DevMode from crudp or assume production by default for safety in non-dev envs?
 		// But usually `site` usage suggests a simple server.
