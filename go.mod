@@ -4,7 +4,7 @@ go 1.25.2
 
 require (
 	github.com/tinywasm/assetmin v0.0.79
-	github.com/tinywasm/client v0.0.77
+	github.com/tinywasm/client v0.0.78
 	github.com/tinywasm/dom v0.0.9
 )
 

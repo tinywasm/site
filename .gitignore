@@ -1,3 +1,5 @@
 *.code-workspace
 example/web/server
 example/web/public/client.wasm
+*.log
+.env
