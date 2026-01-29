@@ -34,6 +34,8 @@ func Mount(mux *http.ServeMux) error {
 		WasmFilename: "client.wasm",
 	}
 
+	jsHandler.RegisterRoutes(mux, "./public/client.wasm")
+
 	// Create AssetMin instance (private/internal)
 	am := assetmin.NewAssetMin(&assetmin.Config{
 		OutputDir: "./public",

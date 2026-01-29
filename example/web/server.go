@@ -17,19 +17,17 @@ func main() {
 	flag.Parse()
 
 	mux := http.NewServeMux()
-
-	// 1. Register Handlers
 	if err := site.RegisterHandlers(modules.Init()...); err != nil {
 		fmt.Println("Error registering handlers:", err)
 		return
 	}
 
-	// 2. Mount Site (Assets + API)
+	// 3. Mount Site (Assets + API)
 	if err := site.Mount(mux); err != nil {
 		fmt.Println("Error mounting site:", err)
 		return
 	}
 
-	fmt.Println("Server running at http://localhost:" + *port)
+	fmt.Println("Server running http://localhost:" + *port)
 	http.ListenAndServe(":"+*port, mux)
 }

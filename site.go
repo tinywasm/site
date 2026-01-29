@@ -23,3 +23,9 @@ var (
 		cp: crudp.New(),
 	}
 )
+
+// SetUserRoles configures the function to extract user roles from the request context.
+// This is required when using handlers with access control (AllowedRoles).
+func SetUserRoles(fn func(data ...any) []byte) {
+	handler.cp.SetUserRoles(fn)
+}

@@ -31,17 +31,13 @@ func build(am *assetmin.AssetMin) error {
 		h := m.handler
 
 		// CSS
-		if css, ok := h.(interface{ RenderCSS() string }); ok {
-			if content := css.RenderCSS(); content != "" {
-				am.AddCSS(m.name, content)
-			}
+		if css, ok := h.(assetmin.CSSProvider); ok {
+			am.AddCSS(css)
 		}
 
 		// Icons
-		if icons, ok := h.(interface{ IconSvg() []map[string]string }); ok {
-			for _, icon := range icons.IconSvg() {
-				am.AddIcon(icon["id"], icon["svg"])
-			}
+		if icons, ok := h.(assetmin.IconProvider); ok {
+			am.AddIcon(icons)
 		}
 
 		// HTML (public + "module" in first line)
