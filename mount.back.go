@@ -22,8 +22,8 @@ func init() {
 	ssr.assetRegister = &backendRegister{}
 }
 
-// Render registers the site handlers with the provided mux and prepares assets.
-func Render(mux *http.ServeMux) error {
+// Mount registers the site handlers with the provided mux and prepares assets.
+func Mount(mux *http.ServeMux) error {
 	// Default Configuration
 	// We want to be "Zero configSite" for the user.
 	// We can check if we are in dev mode via crudp or environment if needed.
@@ -65,4 +65,10 @@ func Render(mux *http.ServeMux) error {
 	handler.cp.RegisterRoutes(mux)
 
 	return nil
+}
+
+// Render registers the site handlers with the provided mux and prepares assets.
+// DEPRECATED: Use Mount(mux) instead.
+func Render(mux *http.ServeMux) error {
+	return Mount(mux)
 }

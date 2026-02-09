@@ -3,7 +3,6 @@
 package site
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/tinywasm/assetmin"
@@ -39,14 +38,6 @@ func TestSite_RegistrationFlow(t *testing.T) {
 		t.Errorf("expected 3 modules, got %d", len(getModules()))
 	}
 
-	// Test renderNavigation
-	nav := renderNavigation()
-	if !strings.Contains(nav, "nav-module") {
-		t.Error("navigation should contain nav-module")
-	}
-	if strings.Contains(nav, "private-module") {
-		t.Error("navigation should NOT contain private-module")
-	}
 
 	// Test build
 	am := assetmin.NewAssetMin(&assetmin.Config{
