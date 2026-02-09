@@ -1,0 +1,80 @@
+//go:build !wasm
+
+package site
+
+import (
+	"github.com/tinywasm/assetmin"
+	"github.com/tinywasm/dom"
+	"github.com/tinywasm/fmt"
+)
+
+// trackedComponentsProvider allows site to collect nested components from module builders
+// without a direct dependency on the module package.
+type trackedComponentsProvider interface {
+	TrackedComponents() []dom.HTMLRenderer
+}
+
+type titleProvider interface {
+	Title() string
+}
+
+// ssrBuild registers all assets with assetmin
+func ssrBuild(am *assetmin.AssetMin) error {
+	// 1. Module Discovery: Track components used by registered modules
+	for _, m := range handler.registeredModules {
+		// If the handler itself is a component, register it
+		if comp, ok := m.handler.(dom.HTMLRenderer); ok {
+			ssr.componentRegistry.register(comp)
+		}
+
+		// If it's a component, trigger its RenderHTML to collect nested components
+		// (e.g. if it uses a builder internally)
+		if html, ok := m.handler.(dom.HTMLRenderer); ok {
+			_ = html.RenderHTML()
+		}
+
+		// Now collect everything tracked if the handler provides them
+		if tcp, ok := m.handler.(trackedComponentsProvider); ok {
+			for _, c := range tcp.TrackedComponents() {
+				ssr.componentRegistry.register(c)
+			}
+		}
+	}
+
+	// 3. Asset Injection
+	var cssBuilder fmt.Conv
+	cssBuilder.Write("<style>\n")
+
+	nav := renderNavigation()
+	if nav == "" {
+		return fmt.Err("site: modules registered but no public modules for navigation.")
+	}
+	fmt.Println("DEBUG: Injected Navigation HTML length:", len(nav))
+	am.InjectHTML(nav)
+
+	// Inject all collected JS
+	if js := ssr.componentRegistry.collectJS(); js != "" {
+		am.InjectHTML("<script>\n" + js + "</script>\n")
+	}
+
+	// Inject all collected Icons (Global Sprite)
+	for id, svg := range ssr.componentRegistry.collectIcons() {
+		am.InjectSpriteIcon(id, svg)
+	}
+
+	// 4. Inject Module HTML (public content)
+	for _, m := range handler.registeredModules {
+		h := m.handler
+		if html, ok := h.(dom.HTMLRenderer); ok {
+			public := isPublicReadable(h)
+			if public {
+				content := html.RenderHTML()
+				if content != "" {
+					am.InjectHTML(content)
+				}
+			}
+		}
+	}
+
+	return nil
+}

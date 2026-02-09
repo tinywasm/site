@@ -27,14 +27,16 @@ func (u *User) Read(data ...any) any {
 }
 ```
 
-## Automatic Registration
+## Module Navigation
 
-When `site.AddModules(components...)` is called, it iterates through all provided components and registers them with the underlying `crudp` router for both Server and WASM.
+While `crudp` handles data routes, `tinywasm/site` provides top-level module navigation using URL hashes.
 
-- **Server-side**: Generates HTTP endpoints via `RegisterRoutes(mux)`.
-- **Client-side**: Configures the SPA navigator to handle these routes asynchronously.
+```go
+// Navigate to the 'users' module
+site.Navigate("app", "users")
+```
 
-## Shared Domain Logic
+This updates `window.location.hash` to `#users`, unmounts the previous module, and mounts/hydrates the new one.
 
 ---
-**Status**: Partially Implemented
+**Status**: Implemented

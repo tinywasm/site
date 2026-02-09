@@ -19,7 +19,7 @@ func (h *mockIntegrationHandler) AllowedRoles(action byte) []byte {
 	return []byte{'*'}
 }
 
-func TestIntegration_Mount(t *testing.T) {
+func TestIntegration_Render(t *testing.T) {
 	// Reset handled indirectly by RegisterHandlers overwriting or appending?
 	// The current implementation appends. We might accumulate if we are not careful.
 	// But site.go implementation of RegisterHandlers doesn't clear.
@@ -31,8 +31,8 @@ func TestIntegration_Mount(t *testing.T) {
 	}
 
 	mux := http.NewServeMux()
-	if err := site.Mount(mux); err != nil {
-		t.Fatalf("Mount failed: %v", err)
+	if err := site.Render(mux); err != nil {
+		t.Fatalf("Render failed: %v", err)
 	}
 
 	// Verify Routes/Assets were registered

@@ -4,35 +4,34 @@ package site
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/tinywasm/assetmin"
 	"github.com/tinywasm/client"
-	"github.com/tinywasm/fmt"
 )
 
-func init() {
-	for _, arg := range os.Args {
-		if arg == "-dev" {
-			handler.DevMode = true
-			break
-		}
-	}
+type backendRegister struct {
+	handlers []any
 }
 
-// Mount configures the server handled by site.
-// It initializes assetmin and registers all routes.
-func Mount(mux *http.ServeMux) error {
+func (r *backendRegister) add(handlers ...any) error {
+	r.handlers = append(r.handlers, handlers...)
+	return nil
+}
+
+func init() {
+	ssr.assetRegister = &backendRegister{}
+}
+
+// Render registers the site handlers with the provided mux and prepares assets.
+func Render(mux *http.ServeMux) error {
 	// Default Configuration
 	// We want to be "Zero configSite" for the user.
 	// We can check if we are in dev mode via crudp or environment if needed.
 	// For now, let's assume we want to be safe and efficient.
 
 	// Create Javascript handler
-	jsHandler := &client.Javascript{
-		UseTinyGo:    client.ParseUseTinyGoFlag(),
-		WasmFilename: "client.wasm",
-	}
+	// Create Javascript handler
+	jsHandler := client.NewJavascriptFromArgs()
 
 	jsHandler.RegisterRoutes(mux, "./public/client.wasm")
 
@@ -50,14 +49,17 @@ func Mount(mux *http.ServeMux) error {
 		DevMode: handler.DevMode,
 	})
 
-	// Register AssetMin Routes
-	am.RegisterRoutes(mux)
+	// Register assets from modules
+	// Handled by ssrBuild(am) which processes handler.registeredModules
 
-	// build Assets (generate/minify)
-	if err := build(am); err != nil {
-		fmt.Println("site: build error:", err)
+	// ssrBuild Assets (generate/minify) - MUST happen BEFORE RegisterRoutes
+	// to ensure the sprite is complete before accepting requests
+	if err := ssrBuild(am); err != nil {
 		return err
 	}
+
+	// Register AssetMin Routes AFTER ssrBuild to ensure sprite is complete
+	am.RegisterRoutes(mux)
 
 	// Register CrudP Routes
 	handler.cp.RegisterRoutes(mux)

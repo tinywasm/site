@@ -4,32 +4,43 @@ import (
 	"github.com/tinywasm/fmt"
 )
 
-// module definition moved to site.go
-
 // RegisterHandlers registers all handlers with site and crudp
 func RegisterHandlers(handlers ...any) error {
-	handler.cp.SetDevMode(handler.DevMode)
 
 	if len(handlers) == 0 {
-		return nil
+		return fmt.Err("site: no handlers provided")
 	}
 
 	for _, h := range handlers {
-		m := &module{handler: h}
+		name := ""
 		if named, ok := h.(interface{ HandlerName() string }); ok {
-			m.name = named.HandlerName()
+			name = named.HandlerName()
 		}
-		handler.registeredModules = append(handler.registeredModules, m)
+
+		if name == "" {
+			continue
+		}
+
+		// Register as module if it implements Module interface
+		if m, ok := h.(Module); ok {
+			registerModule(m)
+		}
+
 	}
 
 	if err := handler.cp.RegisterHandlers(handlers...); err != nil {
 		fmt.Println("site: crudp registration error:", err)
 		return err
 	}
+	// Register assets (SSR only)
+	if err := registerAssets(handlers...); err != nil {
+		fmt.Println("site: asset registration error:", err)
+		return err
+	}
 	return nil
 }
 
 // getModules returns all registered modules
-func getModules() []*module {
+func getModules() []*registeredModule {
 	return handler.registeredModules
 }

@@ -1,60 +1,37 @@
 # Modules
 
-Modules in `tinywasm/site` are logical groupings of components. They serve as the entry point for registering related functionality.
+Modules in `tinywasm/site` are top-level components that orchestrate the site's functionality. They integrate with the `dom` package for rendering and life-cycle management.
 
-## Module Structure
+## Module Interface
 
-A module should provide an `Add()` method that returns a slice of components (or other handlers).
+A module must implement the `site.Module` interface:
 
 ```go
-// modules/users/users.go
-type UsersModule struct{}
-
-func (m *UsersModule) Add() []any {
-    return []any{
-        &UserList{},    // Component 1
-        &UserProfile{}, // Component 2
-    }
+type Module interface {
+    dom.Component
+    HandlerName() string // Unique identifier used for routing
+    ModuleTitle() string // Title displayed in the site
 }
 ```
 
-## Centralized Initialization
+## Registration
 
-All modules are initialized in a central location, typically `modules/init.go`.
+Register modules (and any other handlers) in your application's entry point:
 
 ```go
-// modules/init.go
-func Init() []any {
-    users := &users.UsersModule{}
-    contact := &contact.ContactModule{}
-    
-    var all []any
-    all = append(all, users.Add()...)
-    all = append(all, contact.Add()...)
-    return all
+func init() {
+    site.RegisterHandlers(&MyModule{})
 }
 ```
 
-## Component-Based Routing
+## Lifecycle & Caching
 
-Each component returned by a module's `Add()` method defines its own route by implementing the `NamedHandler` interface from `tinywasm/crudp`.
+The `site` package managed the active module and maintains a cache of the last 3 active modules (LRU).
 
-```go
-func (c *UserList) HandlerName() string { return "users" } // Route: /users
-func (c *UserProfile) HandlerName() string { return "profile" } // Route: /profile
-```
+- **`site.Start(parentID)`**: Initializes the site, hydrates the initial module based on the URL hash.
+- **`site.Navigate(parentID, name)`**: Switches between modules, handling `Unmount` and `Mount` automatically.
 
-### Typed Routing (Avoid Hardcoded Strings)
-
-To navigate between components without hardcoding strings, use the component's type or instance to resolve its route:
-
-```go
-// Conceptual API
-url := site.LinkTo(&UserProfile{}) // Returns "/profile"
-```
+Modules preserve their state (as Go structs) when moved to the cache, allowing for instant "back" navigation without data loss.
 
 ---
-**Status**: Partially Implemented
-
----
-**Status**: No Implemented
+**Status**: Implemented

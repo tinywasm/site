@@ -15,13 +15,13 @@ func main() {
 		return
 	}
 
-	// 2. Mount Active Component
-	if err := site.Mount(); err != nil {
-		fmt.Println("Error mounting site:", err)
+	// 2. Render Site (Hydrate initial, then Render on navigation)
+	if err := site.Render(); err != nil {
+		fmt.Println("Error rendering site:", err)
 		return
 	}
 
-	fmt.Println("Site mounted successfully ok")
+	fmt.Println("Site rendered successfully ok")
 
 	select {}
 }

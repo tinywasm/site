@@ -22,9 +22,9 @@ func main() {
 		return
 	}
 
-	// 3. Mount Site (Assets + API)
-	if err := site.Mount(mux); err != nil {
-		fmt.Println("Error mounting site:", err)
+	// 4. Render Site (Register routes and build assets)
+	if err := site.Render(mux); err != nil {
+		fmt.Println("Error rendering site:", err)
 		return
 	}
 

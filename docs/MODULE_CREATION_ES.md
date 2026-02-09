@@ -41,9 +41,9 @@ func (m *MiModulo) HandlerName() string {
 }
 ```
 
-### 3. Renderizado HTML (RenderHTML)
+#### 3. Renderizado HTML y Registro de Módulo (RenderHTML)
 
-Debe implementar `RenderHTML() string` que devuelve el HTML inicial.
+Para que el sistema de navegación y SSR reconozca una estructura como un módulo, **es obligatorio** usar el `module.New()`. Cualquier handler que no use este constructor no aparecerá en el menú principal ni se inyectará automáticamente en la carga inicial.
 
 **Uso de Componentes (TinyWasm Components):**
 
@@ -56,15 +56,28 @@ La arquitectura exige la reutilización estricta de componentes. **No se debe es
 Ejemplo Correcto:
 
 ```go
+// RenderHTML usa el Builder Pattern para ensamblar el módulo
 func (m *MiModulo) RenderHTML() string {
-    panel := &panel.Panel{
-        ID: m.HandlerName(),
-        Title: "Mi Título",
-        Content: myContentComponent,
-    }
-    return panel.RenderHTML()
+    return module.New(m).
+        SetTitle("Mi Título").
+        SetPublic(). 
+        WithHeader(anyControlsComponent).
+        WithSearchList("my_list_id", itemsHTML).
+        WithForm(
+            form.New("my-form").
+                AddInput("sku", "SKU", form.Text, true).
+                AddInput("name", "Name", form.Text, true),
+        ).
+        WithButtons(
+            &button.Button{Name: "btn_save", Title: "Guardar", Icon: "icon-btn-save"},
+            &button.Button{Name: "btn_cancel", Title: "Cancelar"},
+        ).
+        Render()
 }
 ```
+
+> [!TIP]
+> **Preferencia de Interfaces**: Use siempre los métodos que aceptan componentes (`WithForm`, `WithButtons`, `WithHeader`) en lugar de los que terminan en `Html`. Esto permite que el sistema detecte automáticamente el CSS e Iconos de cada componente sin cargarlos todos por defecto.
 
 ## Integración con TinyWasm Components
 
@@ -122,11 +135,37 @@ func (m *MiModulo) Read(data ...any) any {
 
 En el archivo `front.go`, estos mismos métodos reciben los datos del servidor para actualizar la UI.
 
-```go
-//go:build wasm
+### 4. Separación de Responsabilidades (SSR.go)
 
-func (m *MiModulo) Read(data ...any) any {
-    // Lógica para actualizar el DOM con los datos recibidos
-    return nil
+**CRÍTICO:** Todo código relacionado con CSS, SVG e inyección de JS inicial debe residir en un archivo separado `ssr.go` (o `back.go`) con la etiqueta de compilación `//go:build !wasm`.
+
+Esto es fundamental para:
+1.  **Reducir el tamaño del binario WASM**: El cliente no necesita cargar strings de CSS o SVG que ya fueron renderizados por el servidor.
+2.  **Seguridad**: Evita exponer lógica de servidor en el cliente.
+
+**Ejemplo `ssr.go`:**
+
+```go
+//go:build !wasm
+
+package mimodulo
+
+import "github.com/tinywasm/site"
+
+func (m *MiModulo) RenderCSS() string {
+    // Usar variables estándar (ver tinywasm/components/palette.go)
+    return ".mi-estilo { color: var(" + components.VarColorPrimary + "); }"
 }
+
+// ...
 ```
+
+### 5. Estilos y Variables (Palette)
+
+**REGLA:** No hardcodear colores (ej: `#fff`, `red`). Usar siempre las variables CSS definidas por el sistema.
+Las variables disponibles están declaradas en `tinywasm/components/palette.go`:
+
+-   `var(--color-primary)`
+-   `var(--color-secondary)`
+-   `var(--color-selection)`
+-   etc.
