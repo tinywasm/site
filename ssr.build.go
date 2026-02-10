@@ -18,6 +18,10 @@ type titleProvider interface {
 	Title() string
 }
 
+type accessLevel interface {
+	AllowedRoles(action byte) []byte
+}
+
 // ssrBuild registers all assets with assetmin
 func ssrBuild(am *assetmin.AssetMin) error {
 	// 1. Module Discovery: Track components used by registered modules
@@ -45,13 +49,6 @@ func ssrBuild(am *assetmin.AssetMin) error {
 	var cssBuilder fmt.Conv
 	cssBuilder.Write("<style>\n")
 
-	nav := renderNavigation()
-	if nav == "" {
-		return fmt.Err("site: modules registered but no public modules for navigation.")
-	}
-	fmt.Println("DEBUG: Injected Navigation HTML length:", len(nav))
-	am.InjectHTML(nav)
-
 	// Inject all collected JS
 	if js := ssr.componentRegistry.collectJS(); js != "" {
 		am.InjectHTML("<script>\n" + js + "</script>\n")
@@ -77,4 +74,15 @@ func ssrBuild(am *assetmin.AssetMin) error {
 	}
 
 	return nil
+}
+
+func isPublicReadable(handler any) bool {
+	if al, ok := handler.(accessLevel); ok {
+		for _, r := range al.AllowedRoles('r') {
+			if r == '*' {
+				return true
+			}
+		}
+	}
+	return false
 }

@@ -16,3 +16,14 @@ A lightweight rendering layer built on top of tinywasm/dom, designed to generate
 5. [Access Control](docs/ACCESS_CONTROL.md): Security and SSR vs SPA logic.
 6. [Assets](docs/ASSETS.md): Bundling and resource management.
 7. [Module Creation (ES)](docs/MODULE_CREATION_ES.md): Step-by-step guide to creating modules (Spanish).
+
+## 🔄 Migration
+
+See [MIGRATION.md](MIGRATION.md) for changes in API (v0.2+).
+
+## ✨ New Features
+
+- **Nested Routes**: Support for `#module/param/action`.
+- **Lifecycle Hooks**: `BeforeNavigateAway` and `AfterNavigateTo`.
+- **Simplified API**: `site.Serve(":8080")` and `site.Mount("app")`.
+- **Navigation Component**: Navigation UI moved to `components/nav`.

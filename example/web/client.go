@@ -15,13 +15,10 @@ func main() {
 		return
 	}
 
-	// 2. Render Site (Hydrate initial, then Render on navigation)
-	if err := site.Render(); err != nil {
-		fmt.Println("Error rendering site:", err)
-		return
+	// 2. Mount Site (Blocks automatically)
+	fmt.Println("Mounting site...")
+	if err := site.Mount("app"); err != nil {
+		fmt.Println("Error mounting site:", err)
 	}
-
-	fmt.Println("Site rendered successfully ok")
-
-	select {}
+	// No need for select{} anymore
 }

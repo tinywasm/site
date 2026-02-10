@@ -12,6 +12,17 @@ type Module interface {
 	ModuleTitle() string
 }
 
+// Parameterized modules can receive route parameters
+type Parameterized interface {
+	SetParams(params []string)
+}
+
+// ModuleLifecycle provides hooks for navigation events
+type ModuleLifecycle interface {
+	BeforeNavigateAway() bool // Return false to cancel navigation
+	AfterNavigateTo()         // Called after module is mounted
+}
+
 // ColorPalette defines the global colors for the site.
 type ColorPalette struct {
 	Primary    string

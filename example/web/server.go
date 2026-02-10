@@ -4,7 +4,6 @@ package main
 
 import (
 	"flag"
-	"net/http"
 
 	"github.com/tinywasm/fmt"
 	"github.com/tinywasm/site"
@@ -16,18 +15,15 @@ func main() {
 	_ = flag.String("public-dir", "./public", "public directory")
 	flag.Parse()
 
-	mux := http.NewServeMux()
+	// 1. Register Handlers
 	if err := site.RegisterHandlers(modules.Init()...); err != nil {
 		fmt.Println("Error registering handlers:", err)
 		return
 	}
 
-	// 4. Render Site (Register routes and build assets)
-	if err := site.Render(mux); err != nil {
-		fmt.Println("Error rendering site:", err)
-		return
-	}
-
+	// 2. Serve Site (One-liner)
 	fmt.Println("Server running http://localhost:" + *port)
-	http.ListenAndServe(":"+*port, mux)
+	if err := site.Serve(":" + *port); err != nil {
+		fmt.Println("Error serving site:", err)
+	}
 }
