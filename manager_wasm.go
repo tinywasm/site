@@ -29,7 +29,7 @@ func Start(parentID string) error {
 
 	activeModule = m
 
-	if err := dom.Mount(parentID, m); err != nil {
+	if err := dom.Hydrate(parentID, m); err != nil {
 		return err
 	}
 

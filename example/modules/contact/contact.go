@@ -6,7 +6,7 @@ func (c *Contact) HandlerName() string {
 	return "contact"
 }
 
-func (c *Contact) DisplayName() string {
+func (c *Contact) ModuleTitle() string {
 	return "Contacto"
 }
 

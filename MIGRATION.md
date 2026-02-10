@@ -6,7 +6,7 @@
 ```go
 mux := http.NewServeMux()
 site.RegisterHandlers(modules.Init()...)
-site.Render(mux)
+site.Mount(mux)
 http.ListenAndServe(":8080", mux)
 ```
 
@@ -23,7 +23,7 @@ site.Serve(":8080")
 ### Before
 ```go
 site.RegisterHandlers(modules.Init()...)
-site.Render()
+site.Mount()
 select {}
 ```
 
@@ -38,7 +38,7 @@ site.Mount("app")
 ## Navigation Changes
 
 ### Before
-Navigation UI was injected by `site` (via `site/navigation.go`).
+Navigation UI was in `site/navigation.go`.
 
 ### After
 Use `components/nav`:
@@ -63,7 +63,6 @@ Only flat routes: `#users`
 ### After
 Nested routes: `#users/123/edit`
 
-Implement `Parameterized` interface in your module:
 ```go
 func (u *User) SetParams(params []string) {
     if len(params) > 0 {
@@ -74,7 +73,6 @@ func (u *User) SetParams(params []string) {
 
 ## Lifecycle Hooks (New Feature)
 
-Implement `ModuleLifecycle` interface:
 ```go
 func (u *User) BeforeNavigateAway() bool {
     return !u.hasUnsavedChanges // Cancel if unsaved

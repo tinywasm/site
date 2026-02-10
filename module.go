@@ -22,16 +22,3 @@ type ModuleLifecycle interface {
 	BeforeNavigateAway() bool // Return false to cancel navigation
 	AfterNavigateTo()         // Called after module is mounted
 }
-
-// ColorPalette defines the global colors for the site.
-type ColorPalette struct {
-	Primary    string
-	Secondary  string
-	Tertiary   string
-	Quaternary string
-	Gray       string
-	Selection  string
-	Hover      string
-	Success    string
-	Error      string
-}

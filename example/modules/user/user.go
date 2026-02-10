@@ -12,7 +12,7 @@ func (u *User) HandlerName() string {
 	return "users"
 }
 
-func (u *User) DisplayName() string {
+func (u *User) ModuleTitle() string {
 	return "Usuarios"
 }
 

@@ -5,7 +5,6 @@ package site
 import (
 	"github.com/tinywasm/assetmin"
 	"github.com/tinywasm/dom"
-	"github.com/tinywasm/fmt"
 )
 
 // trackedComponentsProvider allows site to collect nested components from module builders
@@ -45,9 +44,12 @@ func ssrBuild(am *assetmin.AssetMin) error {
 		}
 	}
 
-	// 3. Asset Injection
-	var cssBuilder fmt.Conv
-	cssBuilder.Write("<style>\n")
+	// 2. Asset Injection
+
+	// Inject all collected CSS
+	if css := ssr.componentRegistry.collectCSS(); css != "" {
+		am.InjectHTML("<style>\n" + css + "</style>\n")
+	}
 
 	// Inject all collected JS
 	if js := ssr.componentRegistry.collectJS(); js != "" {
@@ -59,7 +61,7 @@ func ssrBuild(am *assetmin.AssetMin) error {
 		am.InjectSpriteIcon(id, svg)
 	}
 
-	// 4. Inject Module HTML (public content)
+	// 3. Inject Module HTML (public content)
 	for _, m := range handler.registeredModules {
 		h := m.handler
 		if html, ok := h.(dom.HTMLRenderer); ok {
