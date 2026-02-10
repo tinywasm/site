@@ -30,14 +30,13 @@ func Mount(mux *http.ServeMux) error {
 	// For now, let's assume we want to be safe and efficient.
 
 	// Create Javascript handler
-	// Create Javascript handler
 	jsHandler := client.NewJavascriptFromArgs()
 
-	jsHandler.RegisterRoutes(mux, "./public/client.wasm")
+	jsHandler.RegisterRoutes(mux, config.OutputDir+"/client.wasm")
 
 	// Create AssetMin instance (private/internal)
 	am := assetmin.NewAssetMin(&assetmin.Config{
-		OutputDir: "./public",
+		OutputDir: config.OutputDir,
 
 		GetSSRClientInitJS: func() (string, error) { return jsHandler.GetSSRClientInitJS() },
 
@@ -46,7 +45,7 @@ func Mount(mux *http.ServeMux) error {
 		// Let's use `false` (Production/Efficient) by default for new assetmin,
 		// or maybe expose a `site.SetDevMode` that propagates.
 		// Given crudp has SetDevMode, we should probably check that.
-		DevMode: handler.DevMode,
+		DevMode: config.DevMode,
 	})
 
 	// Register assets from modules

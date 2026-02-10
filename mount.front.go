@@ -2,6 +2,10 @@
 
 package site
 
+import (
+	"github.com/tinywasm/fmt"
+)
+
 // No init needed - asset registration is handled by SSR (mount.back.go)
 
 // Mount hydrates the initial module and blocks forever.
@@ -11,20 +15,15 @@ func Mount(parentID string) error {
 
 	// 2. Start the site module management
 	if err := Start(parentID); err != nil {
+		fmt.Printf("Error starting site: %v\n", err)
 		return err
 	}
 
 	select {} // Block automatically (WASM apps don't exit)
 }
 
-// Render renders the active component according to the current route.
-// It defaults to rendering on the element with ID "app".
+// Render registers the site handlers with the provided mux and prepares assets.
 // DEPRECATED: Use Mount(parentID) instead.
 func Render() error {
-	// 1. Initialize Client (CrudP)
-	// This connects the responses to the handlers
-	handler.cp.InitClient()
-
-	// 2. Start the site module management
-	return Start("app")
+	return Mount("app")
 }

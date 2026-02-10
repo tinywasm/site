@@ -13,7 +13,6 @@ import (
 // ssrState holds SSR-specific state
 type ssrState struct {
 	assetRegister     assetRegister
-	cssRoot           cssRoot
 	componentRegistry *ssrComponentRegistry
 }
 
