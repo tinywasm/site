@@ -63,8 +63,8 @@ github.com/tinywasm/fetch v0.1.17 h1:FKdBinOmxC2h5+PSZDd4VoFdSutSHL+YeIh667bI8xU
 github.com/tinywasm/fetch v0.1.17/go.mod h1:hJQ0VBw9dkiqCcz08q3cPkFsYDMzk/6trGasfA+jMM0=
 github.com/tinywasm/fmt v0.17.0 h1:CTqXfyL1ZwtjiAkZyzQvCNrXQoQ5dRae2UsQ8S4zTFQ=
 github.com/tinywasm/fmt v0.17.0/go.mod h1:L2GCAi6asgytPV6TVvGrRq5Ml+DkUt1Ijo5i/2J1jOY=
-github.com/tinywasm/gobuild v0.0.23 h1:zvD8vz1c+lVxGsFWGTfx1y2OuJHmgQoMBW2TD2PKiSA=
-github.com/tinywasm/gobuild v0.0.23/go.mod h1:48JVlXnOy8ZBiz/vz5rWMxv4ZrQvB5Fbw22kOx6RfZY=
+github.com/tinywasm/gobuild v0.0.24 h1:3AijOMF72/h4LOly/EZfBSoLqEdS7FSH73c0vwfHXAg=
+github.com/tinywasm/gobuild v0.0.24/go.mod h1:48JVlXnOy8ZBiz/vz5rWMxv4ZrQvB5Fbw22kOx6RfZY=
 github.com/tinywasm/mcpserve v0.0.19 h1:hEsl9MYuIMT2UFgtkqllpoL7ZT0tN4Y8zWSGiCPEqLY=
 github.com/tinywasm/mcpserve v0.0.19/go.mod h1:oN5PiB/mBUy/CQpNV3avBpRrUeyl2OpP2Z2qR86TXDM=
 github.com/tinywasm/wizard v0.0.16 h1:e2mBu/GHn9OPER/ykQe+B8FN+GjH2YGrQ1shpxpKk5U=
