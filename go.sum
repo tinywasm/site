@@ -55,8 +55,8 @@ github.com/tinywasm/context v0.0.12 h1:F0P6QURIGZaPaxDxZEGZovGeGJ4L4S7Smrju0zr/V
 github.com/tinywasm/context v0.0.12/go.mod h1:MUoF0JxU5/ekbOUrdtSjFO6xHd95MCAYBDWqwLIxSOg=
 github.com/tinywasm/crudp v0.2.11 h1:FQFRFD7j22Ebks8Ws3+yb6ILeYELspc/090jdf2PxI0=
 github.com/tinywasm/crudp v0.2.11/go.mod h1:yZup2wR3V0YyWCFfvSS2Txk3FlcmsMw8NooCiPxd4KA=
-github.com/tinywasm/devflow v0.1.55 h1:YK82y6QFCOHjDgcbS8wRWnMzrboV8Wk4tln6+U7kqGM=
-github.com/tinywasm/devflow v0.1.55/go.mod h1:fZpuInPpoWyRf/jUMKcLQtA1Xqh+2+9x/6XvCDfAP5Q=
+github.com/tinywasm/devflow v0.1.56 h1:5LDIp4qfhcqfUeMzIH6ymk1zUg7WIGeXbfkSty7fb3Y=
+github.com/tinywasm/devflow v0.1.56/go.mod h1:fZpuInPpoWyRf/jUMKcLQtA1Xqh+2+9x/6XvCDfAP5Q=
 github.com/tinywasm/dom v0.5.0 h1:720+LoZTB4S/ybcNfRdEJt2wBxo09WtzEjq6LR5sK+k=
 github.com/tinywasm/dom v0.5.0/go.mod h1:0wlX/Jl/tybubizKtmIpN+qpWJz57urBJ9UTbmCn8vQ=
 github.com/tinywasm/fetch v0.1.17 h1:FKdBinOmxC2h5+PSZDd4VoFdSutSHL+YeIh667bI8xU=
