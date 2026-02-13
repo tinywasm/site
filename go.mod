@@ -21,7 +21,7 @@ require (
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/tinywasm/binary v0.5.6 // indirect
 	github.com/tinywasm/context v0.0.12 // indirect
-	github.com/tinywasm/devflow v0.2.1 // indirect
+	github.com/tinywasm/devflow v0.2.2 // indirect
 	github.com/tinywasm/fetch v0.1.17 // indirect
 	github.com/tinywasm/gobuild v0.0.24 // indirect
 	github.com/tinywasm/mcpserve v0.0.19 // indirect
