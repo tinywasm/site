@@ -37,5 +37,5 @@ require (
 	github.com/tdewolff/minify/v2 v2.24.8 // indirect
 	github.com/tdewolff/parse/v2 v2.8.5 // indirect
 	github.com/tinywasm/crudp v0.2.11
-	github.com/tinywasm/fmt v0.17.0
+	github.com/tinywasm/fmt v0.17.3
 )
