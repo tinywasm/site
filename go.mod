@@ -19,7 +19,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mark3labs/mcp-go v0.43.2 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
-	github.com/tinywasm/binary v0.5.4 // indirect
+	github.com/tinywasm/binary v0.5.6 // indirect
 	github.com/tinywasm/context v0.0.12 // indirect
 	github.com/tinywasm/devflow v0.2.1 // indirect
 	github.com/tinywasm/fetch v0.1.17 // indirect
