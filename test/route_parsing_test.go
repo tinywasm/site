@@ -1,8 +1,9 @@
-package site
+package site_test
 
 import (
 	"reflect"
 	"testing"
+	"github.com/tinywasm/site"
 )
 
 func TestParseRoute(t *testing.T) {
@@ -20,7 +21,7 @@ func TestParseRoute(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		mod, params := parseRoute(tt.hash)
+		mod, params := site.TestParseRoute(tt.hash)
 		if mod != tt.module {
 			t.Errorf("parseRoute(%q) module = %v, want %v", tt.hash, mod, tt.module)
 		}

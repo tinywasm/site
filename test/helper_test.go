@@ -1,4 +1,4 @@
-package site
+package site_test
 
 import "github.com/tinywasm/dom"
 
