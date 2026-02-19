@@ -27,16 +27,22 @@ func (u *User) Read(data ...any) any {
 }
 ```
 
-## Module Navigation
+## Module Navigation (WASM)
 
 While `crudp` handles data routes, `tinywasm/site` provides top-level module navigation using URL hashes.
 
 ```go
-// Navigate to the 'users' module
-site.Navigate("app", "users")
+// site.Navigate(parentID, hash string)
+site.Navigate("app", "users/123")
 ```
 
-This updates `window.location.hash` to `#users`, unmounts the previous module, and mounts/hydrates the new one.
+The `hash` parameter is normalized by `parseRoute()`. All these formats are accepted:
 
----
-**Status**: Implemented
+| Hash String | Resolved Module | Params |
+|-------------|-----------------|--------|
+| `"users"` | `users` | `[]` |
+| `"#users"` | `users` | `[]` |
+| `"#/users"` | `users` | `[]` |
+| `"#users/123"` | `users` | `["123"]` |
+
+Navigation updates `window.location.hash`, unmounts the current module, and mounts/hydrates the new one from the LRU cache if available.

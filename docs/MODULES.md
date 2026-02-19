@@ -1,37 +1,80 @@
 # Modules
 
-Modules in `tinywasm/site` are top-level components that orchestrate the site's functionality. They integrate with the `dom` package for rendering and life-cycle management.
+Modules are top-level navigable units in `tinywasm/site`. Each module maps to a hash route (`#handler-name`) and preserves its state across navigations using an internal LRU cache.
 
-## Module Interface
+## Module Interface (required)
 
-A module must implement the `site.Module` interface:
+Every module must implement the `site.Module` interface:
 
 ```go
 type Module interface {
-    dom.Component
-    HandlerName() string // Unique identifier used for routing
-    ModuleTitle() string // Title displayed in the site
+    dom.Component               // RenderHTML(), OnMount()
+    HandlerName() string        // route key (e.g. "users" → "#users")
+    ModuleTitle() string        // display title
 }
 ```
+
+## Optional Interfaces
+
+Modules can extend their behavior by implementing additional interfaces:
+
+| Interface | Method(s) | When to implement |
+|-----------|-----------|-------------------|
+| `Parameterized` | `SetParams(params []string)` | When the route carries path params (e.g. `#users/123`) |
+| `ModuleLifecycle` | `BeforeNavigateAway() bool`<br>`AfterNavigateTo()` | Navigation hooks (block navigation, refresh on return) |
+| `CSSProvider` | `RenderCSS() string` | Per-module CSS injected at startup (!wasm) |
+| `JSProvider` | `RenderJS() string` | Per-module JS injected at startup (!wasm) |
+| `IconSvgProvider` | `IconSvg() map[string]string` | SVG sprite entry for this module (!wasm) |
+| `AccessLevel` | `AllowedRoles(action byte) []byte` | RBAC: declares which roles can access each action |
 
 ## Registration
 
-Register modules (and any other handlers) in your application's entry point:
+Modules are typically initialized in a dedicated `modules` package and registered at the application start:
 
 ```go
-func init() {
-    site.RegisterHandlers(&MyModule{})
+hs := modules.Init()  // returns []any of all handlers/modules
+site.RegisterHandlers(hs...)
+```
+
+## Hash Routing
+
+The `HandlerName()` is used as the routing key. The `site` package normalizes the URL hash:
+- `"users"`, `"#users"`, `"#/users"` → module `users`, no params
+- `"#users/123"` → module `users`, params `["123"]`
+
+## Path Params Example
+
+When a module implements `Parameterized`, `SetParams` is called automatically upon navigation:
+
+```go
+func (u *Users) SetParams(params []string) {
+    if len(params) > 0 {
+        u.selectedID = params[0]
+    }
 }
 ```
 
-## Lifecycle & Caching
+Navigating with params:
+```go
+site.Navigate("app", "users/123")  // Calls SetParams(["123"]) on Users module
+```
 
-The `site` package managed the active module and maintains a cache of the last 3 active modules (LRU).
+## Lifecycle Hooks
 
-- **`site.Start(parentID)`**: Initializes the site, hydrates the initial module based on the URL hash.
-- **`site.Navigate(parentID, name)`**: Switches between modules, handling `Unmount` and `Mount` automatically.
+Use `ModuleLifecycle` to control navigation or refresh state:
 
-Modules preserve their state (as Go structs) when moved to the cache, allowing for instant "back" navigation without data loss.
+```go
+func (u *Users) BeforeNavigateAway() bool {
+    return !u.hasUnsavedChanges  // returns false to block navigation
+}
 
----
-**Status**: Implemented
+func (u *Users) AfterNavigateTo() {
+    u.Refresh()  // called when user navigates back from cache or initial load
+}
+```
+
+## Module Manager
+
+- **LRU Cache**: The site maintains a cache (default size: 3) to preserve Go struct state. This enables instant "back" navigation.
+- **`site.SetCacheSize(n)`**: Configures the number of cached modules.
+- **`site.Mount(parentID string)` (wasm)**: Hydrates the initial module from the URL hash and starts the main loop. Blocks forever.

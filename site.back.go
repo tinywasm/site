@@ -10,6 +10,21 @@ import (
 	"github.com/tinywasm/dom"
 )
 
+// CSSProvider interface for components that provide CSS
+type CSSProvider interface {
+	RenderCSS() string
+}
+
+// JSProvider interface for components that provide JS
+type JSProvider interface {
+	RenderJS() string
+}
+
+// IconSvgProvider interface for components that provide SVG icons
+type IconSvgProvider interface {
+	IconSvg() map[string]string
+}
+
 // ssrState holds SSR-specific state
 type ssrState struct {
 	assetRegister     assetRegister
@@ -31,12 +46,12 @@ func init() {
 
 type ssrComponentRegistry struct {
 	// registered tracks components by type to avoid duplicate asset collection
-	registered map[reflect.Type]dom.HTMLRenderer
+	registered map[reflect.Type]dom.Component
 }
 
-func (r *ssrComponentRegistry) register(c dom.HTMLRenderer) {
+func (r *ssrComponentRegistry) register(c dom.Component) {
 	if r.registered == nil {
-		r.registered = make(map[reflect.Type]dom.HTMLRenderer)
+		r.registered = make(map[reflect.Type]dom.Component)
 	}
 	if c == nil {
 		return

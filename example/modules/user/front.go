@@ -15,8 +15,11 @@ func (u *User) RenderHTML() string {
 }
 
 func (u *User) OnMount() {
-	el, _ := dom.Get("user-list")
-	el.SetHTML("<p>Lista cargada via WASM (isomorfismo total)</p>")
+	dom.Render("user-list", dom.P("Lista cargada via WASM (isomorfismo total)"))
 }
 
 func (u *User) OnUnmount() {}
+
+func (u *User) GetID() string             { return "user-module" }
+func (u *User) SetID(id string)           {}
+func (u *User) Children() []dom.Component { return nil }

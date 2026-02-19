@@ -10,7 +10,7 @@ import (
 // trackedComponentsProvider allows site to collect nested components from module builders
 // without a direct dependency on the module package.
 type trackedComponentsProvider interface {
-	TrackedComponents() []dom.HTMLRenderer
+	TrackedComponents() []dom.Component
 }
 
 type titleProvider interface {
@@ -26,13 +26,13 @@ func ssrBuild(am *assetmin.AssetMin) error {
 	// 1. Module Discovery: Track components used by registered modules
 	for _, m := range handler.registeredModules {
 		// If the handler itself is a component, register it
-		if comp, ok := m.handler.(dom.HTMLRenderer); ok {
+		if comp, ok := m.handler.(dom.Component); ok {
 			ssr.componentRegistry.register(comp)
 		}
 
 		// If it's a component, trigger its RenderHTML to collect nested components
 		// (e.g. if it uses a builder internally)
-		if html, ok := m.handler.(dom.HTMLRenderer); ok {
+		if html, ok := m.handler.(dom.Component); ok {
 			_ = html.RenderHTML()
 		}
 
@@ -64,7 +64,7 @@ func ssrBuild(am *assetmin.AssetMin) error {
 	// 3. Inject Module HTML (public content)
 	for _, m := range handler.registeredModules {
 		h := m.handler
-		if html, ok := h.(dom.HTMLRenderer); ok {
+		if html, ok := h.(dom.Component); ok {
 			public := isPublicReadable(h)
 			if public {
 				content := html.RenderHTML()

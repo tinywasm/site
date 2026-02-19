@@ -29,7 +29,7 @@ func Start(parentID string) error {
 
 	activeModule = m
 
-	if err := dom.Hydrate(parentID, m); err != nil {
+	if err := dom.Render(parentID, m); err != nil {
 		return err
 	}
 
@@ -70,7 +70,7 @@ func Navigate(parentID string, hash string) error {
 				return nil // Cancelled
 			}
 		}
-		dom.Unmount(activeModule)
+		// dom.Render handles unmount of previous content automatically
 		addToCache(activeModule)
 	}
 
@@ -87,7 +87,7 @@ func Navigate(parentID string, hash string) error {
 	// 4. Mount new module
 	activeModule = target
 	dom.SetHash(hash)
-	if err := dom.Mount(parentID, target); err != nil {
+	if err := dom.Render(parentID, target); err != nil {
 		return err
 	}
 

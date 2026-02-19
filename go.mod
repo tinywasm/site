@@ -39,3 +39,5 @@ require (
 	github.com/tinywasm/crudp v0.2.11
 	github.com/tinywasm/fmt v0.17.3
 )
+
+replace github.com/tinywasm/crudp => ../crudp
