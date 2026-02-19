@@ -1,16 +1,17 @@
 //go:build !wasm
 
-package site
+package site_test
 
 import (
 	"testing"
 
 	"github.com/tinywasm/assetmin"
+	"github.com/tinywasm/site"
 )
 
 func TestSite_RegistrationFlow(t *testing.T) {
 	// Reset global state for test
-	handler.registeredModules = nil
+	site.TestResetHandler()
 
 	h1 := &mockHandler{
 		name: "nav-module",
@@ -28,23 +29,22 @@ func TestSite_RegistrationFlow(t *testing.T) {
 		role: '*',
 	}
 
-	err := RegisterHandlers(h1, h2, h3)
+	err := site.RegisterHandlers(h1, h2, h3)
 	if err != nil {
 		t.Fatalf("RegisterHandlers failed: %v", err)
 	}
 
 	// All 3 handlers implement HTMLProvider, so all get registered
-	if len(getModules()) != 3 {
-		t.Errorf("expected 3 modules, got %d", len(getModules()))
+	if len(site.TestGetModules()) != 3 {
+		t.Errorf("expected 3 modules, got %d", len(site.TestGetModules()))
 	}
-
 
 	// Test build
 	am := assetmin.NewAssetMin(&assetmin.Config{
 		OutputDir: "./test_public",
 	})
 
-	err = ssrBuild(am)
+	err = site.TestSSRBuild(am)
 	if err != nil {
 		t.Fatalf("ssrBuild failed: %v", err)
 	}

@@ -1,12 +1,14 @@
 //go:build !wasm
 
-package site
+package site_test
 
 import (
 	"flag"
 	"os"
 	"os/exec"
 	"testing"
+
+	"github.com/tinywasm/site"
 )
 
 func init() {
@@ -20,7 +22,7 @@ func init() {
 // It uses a subprocess to simulate a fresh run where init() parses os.Args.
 func TestDevModeArgument(t *testing.T) {
 	if os.Getenv("BE_CRASHER") == "1" {
-		if !handler.DevMode {
+		if !site.TestIsDevMode() {
 			os.Exit(1)
 		}
 		os.Exit(0)

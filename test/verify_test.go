@@ -1,33 +1,34 @@
-package site
+package site_test
 
 import (
 	"testing"
+	"github.com/tinywasm/site"
 )
 
 func TestConfiguration(t *testing.T) {
-	SetCacheSize(5)
-	if config.CacheSize != 5 {
-		t.Errorf("Expected CacheSize 5, got %d", config.CacheSize)
+	site.SetCacheSize(5)
+	if site.TestGetConfig().CacheSize != 5 {
+		t.Errorf("Expected CacheSize 5, got %d", site.TestGetConfig().CacheSize)
 	}
 
-	SetDefaultRoute("dashboard")
-	if config.DefaultRoute != "dashboard" {
-		t.Errorf("Expected DefaultRoute dashboard, got %s", config.DefaultRoute)
+	site.SetDefaultRoute("dashboard")
+	if site.TestGetConfig().DefaultRoute != "dashboard" {
+		t.Errorf("Expected DefaultRoute dashboard, got %s", site.TestGetConfig().DefaultRoute)
 	}
 
-	SetOutputDir("./dist")
-	if config.OutputDir != "./dist" {
-		t.Errorf("Expected OutputDir ./dist, got %s", config.OutputDir)
+	site.SetOutputDir("./dist")
+	if site.TestGetConfig().OutputDir != "./dist" {
+		t.Errorf("Expected OutputDir ./dist, got %s", site.TestGetConfig().OutputDir)
 	}
 
-	SetDevMode(true)
-	if !config.DevMode {
-		t.Errorf("Expected DevMode true, got %v", config.DevMode)
+	site.SetDevMode(true)
+	if !site.TestGetConfig().DevMode {
+		t.Errorf("Expected DevMode true, got %v", site.TestGetConfig().DevMode)
 	}
 }
 
 func TestParseRouteLogic(t *testing.T) {
-	SetDefaultRoute("home")
+	site.SetDefaultRoute("home")
 
 	tests := []struct {
 		hash   string
@@ -43,7 +44,7 @@ func TestParseRouteLogic(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		mod, params := parseRoute(tt.hash)
+		mod, params := site.TestParseRoute(tt.hash)
 		if mod != tt.module {
 			t.Errorf("parseRoute(%q) module = %v, want %v", tt.hash, mod, tt.module)
 		}

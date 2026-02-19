@@ -1,11 +1,12 @@
 //go:build wasm
 
-package site
+package site_test
 
 import (
 	"testing"
 
 	"github.com/tinywasm/dom"
+	"github.com/tinywasm/site"
 )
 
 type TestModule struct {
@@ -44,15 +45,13 @@ func TestModuleLifecycle(t *testing.T) {
 	m2 := &TestModule{name: "m2"}
 
 	// Reset global state
-	handler.registeredModules = nil
-	activeModule = nil
-	cache = nil
+	site.TestResetHandler()
+	site.TestResetWasm()
 
-	registerModule(m1)
-	registerModule(m2)
+	site.RegisterHandlers(m1, m2)
 
 	// Start with m1
-	err := Navigate("app", "#m1")
+	err := site.Navigate("app", "#m1")
 	if err != nil {
 		t.Logf("Navigate failed: %v", err)
 		return
@@ -63,7 +62,7 @@ func TestModuleLifecycle(t *testing.T) {
 	}
 
 	// Navigation to m2
-	err = Navigate("app", "#m2")
+	err = site.Navigate("app", "#m2")
 	if err != nil {
 		t.Logf("Navigate failed: %v", err)
 		return
@@ -77,7 +76,7 @@ func TestModuleLifecycle(t *testing.T) {
 	}
 
 	// Navigation with params
-	err = Navigate("app", "#m2/123")
+	err = site.Navigate("app", "#m2/123")
 	if err != nil {
 		t.Logf("Navigate failed: %v", err)
 		return
