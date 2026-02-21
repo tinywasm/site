@@ -28,30 +28,6 @@ var (
 	}
 )
 
-// SetUserRoles configures the function to extract user roles from the request context.
-func SetUserRoles(fn func(data ...any) []byte) {
-	handler.cp.SetUserRoles(fn)
-}
-
-// SetAccessCheck configures an external access check function.
-// When set, AllowedRoles() interface is NOT required on handlers.
-// Must be called before RegisterModules().
-//
-// Integration with rbac:
-//
-//	site.SetAccessCheck(func(resource string, action byte, data ...any) bool {
-//	    for _, d := range data {
-//	        if req, ok := d.(*http.Request); ok {
-//	            userID := req.Header.Get("X-User-ID")
-//	            ok, _ := rbac.HasPermission(userID, resource, action)
-//	            return ok
-//	        }
-//	    }
-//	    return false
-//	})
-func SetAccessCheck(fn func(resource string, action byte, data ...any) bool) {
-	handler.cp.SetAccessCheck(fn)
-}
 
 func (h *siteHandler) GetUserData() (name, area string) {
 	for _, m := range h.registeredModules {

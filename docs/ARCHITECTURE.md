@@ -1,243 +1,68 @@
-# Architecture
+# `tinywasm/site` Architecture & Guide (LLM Context)
 
-> **Status:** Current — February 2026
+Isomorphic Go rendering engine orchestrating routing, asset bundling (CSS/JS/SVG), DOM rendering, and RBAC access control.
 
-`tinywasm/site` is an isomorphic Go rendering engine. It acts as a singleton orchestrator
-that wires together routing, asset bundling, DOM rendering, and access control. None of its
-dependencies import it.
+## 1. Core Principles & Build Split
+- **Isomorphic**: Same structs for backend (`!wasm`) and frontend (`wasm`).
+- **SSR-First, SPA-Enabled**: Server renders initial HTML; WASM client hydrates.
+- **Security Default**: `SetDB` + `SetUserID` mandatory before `Serve`. Bypass with `APP_ENV=development`.
+- **Zero-Config Assets**: Auto-bundles CSS/JS/SVG via `tinywasm/assetmin`.
 
-## Core Principles
-
-- **Isomorphic Core:** Same module structs compile for both server (`!wasm`) and client (`wasm`).
-- **SSR-First, SPA-Enabled:** Server renders initial HTML; WASM client hydrates and handles navigation.
-- **No Templates:** UI built with Go code via `tinywasm/dom`.
-- **Zero Configuration Assets:** Automatic CSS/JS/SVG bundling via `tinywasm/assetmin`.
-- **rbac optional:** Access control can be wired via a closure without importing rbac.
-
----
-
-## Component Relationships
-
-```mermaid
-graph TD
-    APP["Application\n(web/server.go + web/client.go)"]
-
-    subgraph SITE["tinywasm/site (orchestrator)"]
-        SH["siteHandler (singleton)\ncp: crudp.CrudP\nregisteredModules []"]
-    end
-
-    subgraph BACK["Backend only (!wasm)"]
-        AM["tinywasm/assetmin\n(CSS / JS / SVG bundling)"]
-        CL["tinywasm/client\n(WASM JS bootstrap)"]
-        HTTP["net/http\n(ServeMux)"]
-    end
-
-    subgraph FRONT["Frontend only (wasm)"]
-        DOM["tinywasm/dom\n(DOM abstraction)"]
-        FETCH["tinywasm/fetch\n(HTTP client)"]
-    end
-
-    CRUDP["tinywasm/crudp\n(routing + CRUD + access control)"]
-    RBAC["tinywasm/rbac\n(optional — injected via closure)"]
-    FMT["tinywasm/fmt\n(errors / logging)"]
-
-    APP -->|"site.RegisterHandlers(hs...)\nsite.Serve / site.Mount"| SITE
-
-    SITE --> CRUDP
-    SITE --> FMT
-    SITE -->|"!wasm"| AM
-    SITE -->|"!wasm"| CL
-    SITE -->|"!wasm"| HTTP
-    SITE -->|"wasm"| DOM
-
-    CRUDP -->|"wasm"| FETCH
-
-    APP -->|"rbac.Init(adapter)\nrbac.Register(hs...)\nsite.SetAccessCheck(closure)"| RBAC
-    RBAC -.->|"no direct import\nclosure injected by app"| CRUDP
-```
-
----
-
-## Architecture Layers
-
-```
-┌────────────────────────────────────────────────────────────┐
-│  Application  (web/server.go  +  web/client.go)            │
-│  rbac.Init(adapter) / rbac.Register(hs...)   [optional]    │
-│  site.SetAccessCheck(closure)                [optional]    │
-│  site.RegisterHandlers(modules.Init()...)                  │
-│  site.Serve(":8080")     /     site.Mount("app")           │
-└────────────────────────────┬───────────────────────────────┘
-                             │ calls
-┌────────────────────────────▼───────────────────────────────┐
-│  tinywasm/site  (singleton orchestrator)                   │
-│                                                            │
-│  Public API:                                               │
-│  RegisterHandlers / SetUserRoles / SetAccessCheck          │
-│  SetCacheSize / SetDefaultRoute / SetDevMode               │
-│  Serve (!wasm)  /  Mount  /  Navigate (wasm)               │
-├────────────────────────────────────────────────────────────┤
-│  Internal files                                            │
-│  site.go  register.go  config.go  module.go  manager.go   │
-│  ssr.build.go  mount.back.go  mount.front.go               │
-│  site.back.go  manager_wasm.go                             │
-│  register_ssr.go  register_wasm.go  serve.go               │
-├──────────┬─────────────┬────────────┬────────┬────────────┤
-│  crudp   │  assetmin   │  client    │  dom   │  fmt       │
-│  routing │  CSS/JS/SVG │  WASM JS   │  DOM   │  errors    │
-│  CRUD    │  (!wasm)    │  (!wasm)   │  (wasm)│  logging   │
-│  access  │             │            │        │            │
-└──────────┴─────────────┴────────────┴────────┴────────────┘
-```
-
-**Read path (hot — wasm):** module navigation → `manager.go` → `dom` → browser DOM
-**Write path (HTTP):** request → `crudp` routes → handler → response
-**Init path (!wasm):** `RegisterHandlers` → `ssrBuild` → `assetmin` + `crudp.RegisterRoutes`
-
----
-
-## Build Tag Split
-
-| File | Tag | Responsibility |
-|------|-----|----------------|
-| `site.go` | — | Singleton `siteHandler`, public API delegation |
-| `site.back.go` | `!wasm` | SSR interfaces: `CSSProvider`, `JSProvider`, `IconSvgProvider` |
-| `config.go` | — | Configuration values (`CacheSize`, `DefaultRoute`, `OutputDir`) |
-| `module.go` | — | `Module`, `Parameterized`, `ModuleLifecycle` interfaces |
-| `manager.go` | — | Module LRU cache, route matching |
-| `manager_wasm.go` | `wasm` | WASM client navigation and hydration logic |
-| `register.go` | — | `RegisterHandlers()`, module list accumulation |
-| `register_ssr.go` | `!wasm` | Asset extraction and collection per handler |
-| `register_wasm.go` | `wasm` | No-op asset register (WASM has no asset pipeline) |
-| `serve.go` | `!wasm` | `Serve()` one-liner: `NewServeMux + Mount + ListenAndServe` |
-| `mount.back.go` | `!wasm` | `Mount()` backend: assetmin + crudp route registration |
-| `mount.front.go` | `wasm` | `Mount()` frontend: `InitClient + Start + select{}` |
-| `ssr.build.go` | `!wasm` | `ssrBuild()`: CSS/JS/SVG/HTML injection into assetmin |
-
----
-
-## Public API
+## 2. Server Setup (Backend `!wasm`)
+All configuration must happen before `site.Serve(":8080")`.
 
 ```go
-// Configuration — call before RegisterHandlers
-func SetUserRoles(fn func(data ...any) []byte)
-func SetAccessCheck(fn func(resource string, action byte, data ...any) bool)
-func SetCacheSize(size int)        // default: 3
-func SetDefaultRoute(route string) // default: "home"
-func SetOutputDir(dir string)      // default: "./public"
-func SetDevMode(enabled bool)
-
-// Registration
-func RegisterHandlers(handlers ...any) error
-
-// Serving
-func Serve(addr string) error          // !wasm: one-liner
-func Mount(mux *http.ServeMux) error   // !wasm: register with existing mux
-func Mount(parentID string) error      // wasm: hydrate DOM, blocks forever
-func Navigate(parentID, hash string) error  // wasm: SPA navigation
-
-// Utility
-func GetUserData() (name, area string) // reads from registered modules
-```
-
----
-
-## Module Interfaces
-
-| Interface | Methods | Source package | When used |
-|-----------|---------|---------------|-----------|
-| `Module` | `HandlerName() string`<br>`ModuleTitle() string`<br>`dom.Component` | `site` | Required for navigable modules |
-| `Parameterized` | `SetParams(params []string)` | `site` | Routes with path params (`#route/param`) |
-| `ModuleLifecycle` | `BeforeNavigateAway() bool`<br>`AfterNavigateTo()` | `site` | Navigation hooks |
-| `CSSProvider` | `RenderCSS() string` | `site` (!wasm) | Per-module CSS injection |
-| `JSProvider` | `RenderJS() string` | `site` (!wasm) | Per-module JS injection |
-| `IconSvgProvider` | `IconSvg() map[string]string` | `site` (!wasm) | SVG sprite injection |
-| `AccessLevel` | `AllowedRoles(action byte) []byte` | `crudp` | Standalone RBAC mode |
-| `DataValidator` | `ValidateData(action byte, data ...any) error` | `crudp` | Required for CRUD handlers |
-| `NamedHandler` | `HandlerName() string` | `crudp` | Required for CRUD routing |
-
----
-
-## SSR vs SPA Rendering Decision
-
-The rendering mode per module is determined by `AllowedRoles('r')` at startup:
-
-| `AllowedRoles('r')` returns | Render mode | Reason |
-|-----------------------------|-------------|--------|
-| `[]byte{'*'}` | **SSR** — full HTML on server | Public content: SEO + fast first paint |
-| specific roles (e.g. `['a','e']`) | **SPA** — WASM client renders | Private content: auth required before display |
-
----
-
-## rbac Integration (optional)
-
-`tinywasm/rbac` is **not a direct dependency** of `tinywasm/site`. Integration is wired by
-the application layer via a closure. The `site` package only exposes the `SetAccessCheck` hook.
-
-```go
-// web/server.go — application initialization (rbac mode)
-rbac.SetLog(log.Println)
-if err := rbac.Init(adapter); err != nil {
-    log.Fatal(err)
-}
-
-// Seed roles (idempotent)
-rbac.CreateRole(unixid.New(), 'a', "Admin",   "Full system access")
-rbac.CreateRole(unixid.New(), 'e', "Editor",  "Content management")
-rbac.CreateRole(unixid.New(), 'v', "Visitor", "Read-only access")
-
-// Register handler permissions from AllowedRoles() (idempotent)
-hs := modules.Init()
-if err := rbac.Register(hs...); err != nil {
-    log.Fatal(err)
-}
-
-// Wire rbac into site's access control
-site.SetAccessCheck(func(resource string, action byte, data ...any) bool {
-    for _, d := range data {
-        if req, ok := d.(*http.Request); ok {
-            userID := req.Header.Get("X-User-ID")
-            ok, _ := rbac.HasPermission(userID, resource, action)
-            return ok
-        }
-    }
-    return false
+// 1. Mandatory Security Setup
+site.SetDB(&Adp{DB: db}) 
+site.SetUserID(func(data ...any) string { 
+    if req, ok := data[0].(*http.Request); ok { return req.Header.Get("X-User-ID") }
+    return "" 
 })
 
-// Register handlers (same slice — no duplication)
-if err := site.RegisterHandlers(hs...); err != nil {
-    log.Fatal(err)
-}
-site.Serve(":8080")
+// 2. Queue Roles & Register Handlers (auto-seeds RBAC permissions)
+site.CreateRole('a', "Admin", "Desc") 
+site.RegisterHandlers(modules.Init()...) 
+
+// 3. Serve (applies RBAC, runs asset bundling, starts server)
+site.Serve(":8080") 
 ```
+* **Login Flow**: `site.AssignRole(userID, 'a')` / `site.RevokeRole(userID, 'a')`. Read roles: `site.GetUserRoleCodes(userID)`.
+* **Config**: `site.SetCacheSize(3)` (module LRU cache), `site.SetDefaultRoute("home")`.
 
-See [ACCESS_CONTROL.md](ACCESS_CONTROL.md) for both access control modes.
-See [rbac CRUDP_INTEGRATION diagram](../../rbac/docs/diagrams/CRUDP_INTEGRATION.md) for the
-full request-phase flow.
+## 3. Interfaces & Components
+A component's capabilities are determined by implementing interfaces (type assertions at registration):
 
----
+### Module & Navigation Interfaces
+Required for a navigable route:
+- `site.Module`: `HandlerName() string`, `ModuleTitle() string`, + `dom.Component` (`RenderHTML`, `OnMount`).
+Optional:
+- `site.Parameterized`: `SetParams(params []string)` (ex: url `#users/123` -> params=`["123"]`).
+- `site.ModuleLifecycle`: `BeforeNavigateAway() bool` (block nav if false), `AfterNavigateTo()`.
 
-## Dependencies
+### Routing & Data (`tinywasm/crudp`)
+- `crudp.NamedHandler`: `HandlerName() string`
+- `crudp.Creator`, `Reader`, `Updater`, `Deleter`: Maps to POST, GET, PUT, DELETE respectively.
+- `crudp.DataValidator`: `ValidateData(action byte, data ...any) error`.
 
-```
-tinywasm/site
-├── github.com/tinywasm/crudp      # routing + CRUD + access control (all builds)
-├── github.com/tinywasm/fmt        # errors and logging (all builds)
-├── github.com/tinywasm/assetmin   # CSS/JS/SVG bundling (!wasm)
-├── github.com/tinywasm/client     # WASM JS bootstrap (!wasm)
-└── github.com/tinywasm/dom        # DOM abstraction (wasm)
-    └── github.com/tinywasm/fetch  # HTTP client, transitive (wasm)
+### Access Control & SSR Decision (`crudp.AccessLevel`)
+- `AllowedRoles(action byte) []byte` (e.g. action `'r'`, `'c'`, `'u'`, `'d'`).
+- **SSR Trigger**: Returning `[]byte{'*'}` for action `'r'` triggers **SSR rendering** (fully indexed HTML).
+- **SPA Trigger**: Returning specific roles (e.g., `[]byte{'a'}`) triggers **SPA rendering** (WASM authenticates & renders).
 
-Optional (application layer, not imported by site):
-    github.com/tinywasm/rbac       # RBAC — injected via SetAccessCheck closure
-```
+### UI Assets (Backend extraction)
+- `site.CSSProvider`: `RenderCSS() string`
+- `site.JSProvider`: `RenderJS() string`
+- `site.IconSvgProvider`: `IconSvg() map[string]string` (returns map with 1 `"id"` and 1 `"svg"` source).
 
----
+## 4. Routing & Navigation
+- **Data (HTTP)**: Handled by CRUD interfaces mapped to `/{handlerName}/{path...}`.
+- **WASM Application Mount**: `site.Mount(parentID string)` initializes the WASM client, mounts the initial module, and blocks forever.
+- **WASM SPA Navigation**: `site.Navigate(parentID, "users/123")`. Updates the hashtag to `#users/123` and hydrates state from the LRU cache.
 
-## Related Documentation
+## 5. File Responsibilities (Internal)
+* `site.go`: Singleton API delegation.
+* `manager.go` / `manager_wasm.go`: Module LRU cache & navigation/hydration.
+* `register_ssr.go` (`!wasm`): Asset extraction (CSS/JS/SVG) during `RegisterHandlers`.
+* `rbac.back.go` (`!wasm`): Orchestrates `tinywasm/rbac`.
 
-- [MODULES.md](MODULES.md) — Module structure and lifecycle
-- [COMPONENTS.md](COMPONENTS.md) — UI components and asset interfaces
-- [ROUTING.md](ROUTING.md) — Hash-based routing and path params
-- [ACCESS_CONTROL.md](ACCESS_CONTROL.md) — SetUserRoles vs SetAccessCheck
-- [ASSETS.md](ASSETS.md) — CSS/JS/SVG bundling pipeline
+*(For diagrams, see `docs/diagrams/` folder)*

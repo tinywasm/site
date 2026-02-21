@@ -32,6 +32,11 @@ func RegisterHandlers(handlers ...any) error {
 		fmt.Println("site: crudp registration error:", err)
 		return err
 	}
+	// Seed rbac permissions (backend only, no-op on wasm)
+	if err := registerRBAC(handlers...); err != nil {
+		fmt.Println("site: rbac registration error:", err)
+		return err
+	}
 	// Register assets (SSR only)
 	if err := registerAssets(handlers...); err != nil {
 		fmt.Println("site: asset registration error:", err)

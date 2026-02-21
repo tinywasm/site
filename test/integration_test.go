@@ -21,6 +21,7 @@ func (h *mockIntegrationHandler) AllowedRoles(action byte) []byte {
 
 func TestIntegration_Render(t *testing.T) {
 	site.TestResetHandler()
+	site.SetDevMode(true)
 
 	err := site.RegisterHandlers(&mockIntegrationHandler{})
 	if err != nil {

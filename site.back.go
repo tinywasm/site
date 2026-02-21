@@ -10,21 +10,6 @@ import (
 	"github.com/tinywasm/dom"
 )
 
-// CSSProvider interface for components that provide CSS
-type CSSProvider interface {
-	RenderCSS() string
-}
-
-// JSProvider interface for components that provide JS
-type JSProvider interface {
-	RenderJS() string
-}
-
-// IconSvgProvider interface for components that provide SVG icons
-type IconSvgProvider interface {
-	IconSvg() map[string]string
-}
-
 // ssrState holds SSR-specific state
 type ssrState struct {
 	assetRegister     assetRegister
@@ -36,8 +21,14 @@ var ssr = &ssrState{
 }
 
 func init() {
+	env := os.Getenv("APP_ENV")
+	if env == "development" || env == "dev" {
+		config.DevMode = true
+		handler.DevMode = true
+	}
 	for _, arg := range os.Args {
 		if arg == "-dev" {
+			config.DevMode = true
 			handler.DevMode = true
 			break
 		}

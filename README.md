@@ -9,12 +9,7 @@ A lightweight rendering layer built on top of tinywasm/dom, designed to generate
 
 ## 📚 Documentation
 
-1. [Architecture](docs/ARCHITECTURE.md): High-level overview and design goals.
-2. [Modules](docs/MODULES.md): Routes and modular structure.
-3. [Components](docs/COMPONENTS.md): UI building blocks and icons.
-4. [Routing](docs/ROUTING.md): Typed routing and path generation.
-5. [Access Control](docs/ACCESS_CONTROL.md): Security and SSR vs SPA logic.
-6. [Assets](docs/ASSETS.md): Bundling and resource management.
+1. [Architecture & Developer Guide](docs/ARCHITECTURE.md): Comprehensive LLM-optimized guide covering the isomorphic rendering engine, routing, modules, components, asset bundling, and RBAC access control.
 
 ## 🔄 Migration
 

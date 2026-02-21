@@ -4,8 +4,8 @@ go 1.25.2
 
 require (
 	github.com/tinywasm/assetmin v0.2.1
-	github.com/tinywasm/client v0.5.32
-	github.com/tinywasm/dom v0.5.0
+	github.com/tinywasm/client v0.5.50
+	github.com/tinywasm/dom v0.5.6
 )
 
 require (
@@ -19,12 +19,13 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mark3labs/mcp-go v0.43.2 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
-	github.com/tinywasm/binary v0.5.7 // indirect
+	github.com/tinywasm/binary v0.5.11 // indirect
 	github.com/tinywasm/context v0.0.12 // indirect
-	github.com/tinywasm/devflow v0.2.4 // indirect
+	github.com/tinywasm/devflow v0.2.8 // indirect
 	github.com/tinywasm/fetch v0.1.17 // indirect
 	github.com/tinywasm/gobuild v0.0.24 // indirect
 	github.com/tinywasm/mcpserve v0.0.20 // indirect
+	github.com/tinywasm/time v0.3.1 // indirect
 	github.com/tinywasm/wizard v0.0.16 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
@@ -37,7 +38,11 @@ require (
 	github.com/tdewolff/minify/v2 v2.24.8 // indirect
 	github.com/tdewolff/parse/v2 v2.8.5 // indirect
 	github.com/tinywasm/crudp v0.2.11
-	github.com/tinywasm/fmt v0.17.3
+	github.com/tinywasm/fmt v0.18.4
+	github.com/tinywasm/rbac v0.0.1
+	github.com/tinywasm/unixid v0.2.22
 )
 
 replace github.com/tinywasm/crudp => ../crudp
+
+replace github.com/tinywasm/rbac => ../rbac
